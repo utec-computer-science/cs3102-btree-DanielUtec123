@@ -139,6 +139,7 @@ public:
         return ptr->is_overflow() == true ? BT_OVERFLOW : NORMAL;
     }
 
+
     void split(BNode<T,S> *ptr, int pos) {
         BNode<T,S> *node_in_overflow = ptr->children[pos];
         BNode<T,S> *child1 = node_in_overflow;
@@ -205,11 +206,37 @@ public:
         ptr->count = 1;
     }
 
-    bool find(const value_t = 0) const{
+
+    bool find(BNode<T,S> *ptr, const value_t &value) const{
+
+        int pos = 0;
+        while (pos < ptr->count && ptr->data[pos] < value) {
+            pos++;
+        }
+
+        if (ptr->data[pos] == value){
+            return true;
+        }
+        //pos now have the real position
+
+        if (ptr->children[pos] != nullptr) {
+            // long page_id = children[pos];
+            return find(ptr->children[pos], value);
+        } else {
+            return false;
+        }
+
+    }
+
+    bool find(const value_t &value) const{
         // TODO :: SEARCH
         // search(x); inside each page
-        return false;
+        if (!root)
+            return false;
+
+        return find(root, value);
     }
+
 
     void print() {
         print(root, 0);
@@ -251,7 +278,12 @@ int main() {
 
     std::cout<<tree<< std::endl;
 
+    tree.find(5)? std::cout << "Found\n": std::cout << "Not Found\n";;
 
+    tree.find(4)? std::cout << "Found\n": std::cout << "Not Found\n";
+    tree.find(2)? std::cout << "Found\n": std::cout << "Not Found\n";
+    tree.find(7)? std::cout << "Found\n": std::cout << "Not Found\n";
+    tree.find(10)? std::cout << "Found\n": std::cout << "Not Found\n";
     typedef SS_Traits<float> strait_t;
     //BTree<strait_t,10> stree;
     //std::cout<<stree<< std::endl;
